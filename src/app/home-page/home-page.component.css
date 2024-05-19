@@ -1,0 +1,63 @@
+::ng-deep :root{
+  
+  position: relative !important;
+  max-width: 100dvw;
+
+  padding: 0; 
+}
+
+::ng-deep body{
+  --overallPadd: '12px';
+
+  margin: 0;
+  padding: 0; /*var(--overallPadd);*/
+  padding-top: 56px;
+
+  background-color: var(--mainWhite);
+}
+:host{
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 100dvw;
+
+  min-height: calc(100dvh - 48px);
+}
+
+
+
+.slotsCont{
+  width: 100%;
+  max-width: 1280px;
+  min-height: 100%;
+  height: fit-content;
+  padding: 12px;
+  gap: 4px 8px;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+
+  overflow: visible;
+}
+
+.slotsCont_column{
+  width: max-content;
+  max-width: 480px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px 8px;
+  flex: 1;
+}
+
+@media (max-width: 920px) {
+  .slotsCont_column{
+    width: 100%;
+    max-width: 100%;
+  }
+}

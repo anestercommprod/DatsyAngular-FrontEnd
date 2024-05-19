@@ -1,0 +1,236 @@
+::ng-deep :root {
+    --mainBlue: rgb(33, 150, 243);
+    --boxButtonColor: rgb(243, 141, 16);
+    --lunchButtonColor: rgb(64, 200, 64);
+    --questButtonColor: rgb(228, 196, 16);
+    --meetingButtonColor: rgb(216, 15, 243);
+
+    position: relative !important;
+    max-width: 100dvw;
+
+    padding: 0;
+}
+
+
+::ng-deep body {
+    --overallPadd: '12px';
+
+    margin: 0;
+    padding: 0;
+    /*var(--overallPadd);*/
+    padding-top: 56px;
+
+    background-color: var(--mainWhite);
+}
+
+:host {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 100dvw;
+
+    min-height: calc(100dvh - 48px);
+    padding: 12px;
+
+    gap: 28px;
+}
+
+
+
+
+.schedule-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.header-row,
+.employee-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.name-cell,
+.time-cell,
+.checkbox-cell {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    user-select: none;
+}
+
+.name-cell {
+    --maxWidth: 150px;
+    height: 38px;
+    min-width: var(--maxWidth);
+    max-width: var(--maxWidth);
+
+    white-space: nowrap;
+    user-select: none;
+    overflow: hidden;
+}
+
+.name,
+.time-cell,
+.checkbox-cell {
+    height: 38px;
+    min-width: 28px;
+    max-width: 28px;
+    padding: 0;
+}
+
+.time-cell {
+    font-size: 14px;
+    padding-top: 0px;
+    user-select: none;
+    overflow: hidden;
+}
+
+.checkbox-cell {
+    padding: 0;
+    margin: 0;
+}
+
+.checkbox-cell input {
+    min-width: 100%;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
+
+    margin: 0;
+    user-select: none;
+}
+
+
+
+
+
+.headingContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-row > :first-child{
+    border-top-left-radius: 4px !important;
+}
+.header-row > :last-child{
+    border-top-right-radius: 4px !important;
+}
+.schedule-container > :last-child .name-cell{
+    border-bottom-left-radius: 4px;
+}
+.schedule-container > :last-child > :last-child{
+    border-bottom-right-radius: 2px !important;
+}
+
+.status-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-self: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.status-container button {
+    padding: 4px 8px;
+    border: 0;
+    outline: 0;
+
+    color: White;
+    background-color: rgb(230, 230, 230);
+    text-shadow: 0px 1px 6px rgba(0, 0, 0, 0.333);
+
+    border-radius: 6px;
+    border: 3px solid rgb(100, 100, 100, 0.1);
+    user-select: none;
+
+    transition: all 160ms ease-in-out;
+}
+
+.status-container button:hover {
+    cursor: pointer;
+}
+
+.workButton {
+    background-color: var(--mainBlue) !important;
+}
+
+.boxButton {
+    background-color: var(--boxButtonColor) !important;
+}
+
+.lunchButton {
+    background-color: var(--lunchButtonColor) !important;
+}
+
+.questButton {
+    background-color: var(--questButtonColor) !important;
+}
+
+.meetingButton {
+    background-color: var(--meetingButtonColor) !important;
+}
+
+.activeButton {
+    border-bottom: 3px solid brown !important;
+    border-top: 3px solid rgb(255, 0, 0, 0.0) !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+
+.checkbox-like {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ccc;
+    display: inline-block;
+    user-select: none;
+    cursor: pointer;
+}
+
+.checkbox-like.activeButton {
+    border-color: black;
+}
+
+
+
+.saveButton{
+    background-color: var(--mainBlue);
+    color: rgb(230,238,240);
+    
+    border: 0;
+    border-radius: 6px;
+    padding: 6px 20px;
+    font-size: 18px;
+    outline: 0;
+
+    align-self: flex-start;
+    user-select: none;
+}
+.saveButton:hover{
+    cursor: pointer;
+    color: White;
+    border: 1px solid rgb(255,255,255, 0.333);
+    padding: 5px 19px;
+}
+
+.date-time{
+    position: relative;
+}
+.date-time input{
+    position: absolute;
+    right: 0;
+    top: 16px;
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+.date-time label{
+    z-index: 9;
+    cursor: pointer;
+}

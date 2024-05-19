@@ -1,0 +1,16 @@
+<app-calendar-header></app-calendar-header>
+<app-calendar-slots-date-time></app-calendar-slots-date-time>
+<div class="slotsCont">
+    <div class="slotsCont_column">
+        <app-calendar-slot-component *ngFor="let _ of 'x'.repeat(46).split('').slice(0, 22); let i = index"
+            [slotIndex]="i"></app-calendar-slot-component>
+    </div>
+    <div class="slotsCont_column">
+        <app-calendar-slot-component *ngFor="let _ of 'x'.repeat(46).split('').slice(22, 45); let i = index" [slotIndex]="i+22"></app-calendar-slot-component>
+    </div>
+
+
+</div>
+
+
+<router-outlet></router-outlet>

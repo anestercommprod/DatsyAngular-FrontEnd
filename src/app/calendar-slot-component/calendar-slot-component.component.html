@@ -1,0 +1,31 @@
+<div class="inputContainer" (click)="toggleMaxHeight(slotsReveal)" [id]="setElementId(slotIndex)">
+  <button class="buttonInteract buttonCopy"></button>
+  <p>{{ calculateTime(slotIndex) }}</p>
+  <p class="slotsAvailable">{{ eventsAmount }} / {{ eventsAmountMax }}</p>
+</div>
+<div class="slotsCont_e" #slotsReveal>
+  <ng-container *ngIf="dataFetched; else loadingTemplate">
+    <ng-container *ngFor="let i of [0,1,2,3,4,5,6,7,8,9].slice(0, getLoopLimit())">
+      <ng-container *ngIf="shouldUseOption1(setElementId(slotIndex), i); then option1Template; else option2Template"></ng-container>
+    </ng-container>
+  </ng-container>
+  <ng-template #loadingTemplate>
+    <p>Loading events...</p>
+  </ng-template>
+</div>
+
+<ng-template #option1Template>
+  <div class="slotInputContainer">
+    <p class="slotHolderName">{{ eventHolderName }}</p>
+    <input title="{{eventCreatorName}}" type="text" placeholder="https://crm.company.tech/persons/..." value="{{eventText}}" maxlength="40">
+    <button class="buttonInteract buttonAssign"></button>
+    <button class="buttonInteract buttonRemove"></button>
+  </div>
+</ng-template>
+
+<ng-template #option2Template>
+  <div class="slotInputContainer">
+    <input type="text" placeholder="https://crm.company.tech/persons/..." #newEventText maxlength="40">
+    <button class="buttonInteract buttonAdd" (click)="createEvent()"></button>
+  </div>
+</ng-template>

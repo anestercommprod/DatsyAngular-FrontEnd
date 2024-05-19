@@ -1,0 +1,35 @@
+<app-calendar-header></app-calendar-header>
+
+<div class="headingContainer">
+    <div class="status-container">
+        <button *ngFor="let status of statuses"
+            [ngClass]="[status.toLowerCase() + 'Button', currentStatus === status ? 'activeButton' : '']"
+            (click)="setStatus(status)">
+            {{ status }}
+        </button>
+    </div>
+    
+    <div class="date-time">
+        <label for="invisible-date" class="sr-only" (click)="openDatePicker()">{{ selectedDate }}{{ selectedDate_day }}</label>
+    <input type="date" id="invisible-date" name="invisible-date" class="sr-only" #dateInput (change)="onDateChange($event)">
+    </div>
+</div>
+
+<div class="schedule-container">
+    <div class="header-row">
+        <div class="name-cell">Name</div>
+        <div class="time-cell" *ngFor="let time of times" [innerHTML]="formatTime(time)"></div>
+    </div>
+
+    <div class="employee-row" *ngFor="let employee of employees">
+        <div class="name-cell">{{ employee.name }}</div>
+        <div class="checkbox-cell" *ngFor="let time of times">
+            <div class="checkbox-like"
+                [ngClass]="[employee.schedule[time].toLowerCase() + 'Button', employee.schedule[time] ? 'activeButton' : '']"
+                (click)="toggleStatus(employee.name, time)">
+            </div>
+        </div>
+    </div>
+</div>
+
+<button (click)="saveSchedule()" class="saveButton">Save</button>

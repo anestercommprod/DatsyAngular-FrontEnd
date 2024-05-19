@@ -1,0 +1,11 @@
+:root {
+    --mainBlue: rgb(33, 150, 243);
+    --mainWhite: rgb(250, 250, 250);
+    --mainWhiteless: rgb(245,244,243);
+    --mainBlack: rgb(33, 33, 33);
+    --mainGrey: rgb(173,173,173);
+    --darkGray: rgb(36, 36, 36);
+
+    --softOutline: rgb(48, 48, 48, 0.08);
+    --softOutline1: rgb(48, 48, 48, 0.136);
+}

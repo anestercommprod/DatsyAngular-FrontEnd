@@ -34,17 +34,14 @@ export class HomePageComponent {
 
         this.markedSlot = document.getElementById(closestTime.toString()) as HTMLElement;
         this.markedSlotTime = closestTime;
-        console.log(closestTime);
 
         if (this.markedSlot) {
             this.markedSlot.style.backgroundColor = '';
-            console.log('style reset for ', this.markedSlot)
         }
 
         this.markedSlotTime = closestTime;
         if (this.markedSlot) {
             this.markedSlot.style.boxShadow = '0px 0px 4px rgb(33, 150, 243, 0.5)';
-            console.log(this.markedSlot);
         }
 
         return {
@@ -83,8 +80,6 @@ export class HomePageComponent {
                 const openEventValue = urlParams.get('openEvent');
                 document.getElementById(openEventValue).click();
                 urlParams.delete('openEvent');
-            } else {
-                console.log('openEvent parameter is not present in the URL');
             }
         }, timeout);
     }

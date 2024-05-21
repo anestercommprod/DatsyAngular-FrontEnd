@@ -88,7 +88,6 @@ export class CalendarSlotsDateTimeComponent {
         this.fetchDataSubscription.add(
             this.dataService.fetchEvents(this.selectedDate).subscribe(
                 (data) => {
-                    console.log('fetched data ', data);
                     setTimeout(() => {
                         this.isLoading = false;
                     }, delay);

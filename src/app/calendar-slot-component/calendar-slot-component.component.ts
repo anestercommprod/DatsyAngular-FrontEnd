@@ -232,7 +232,6 @@ export class CalendarSlotComponentComponent {
             const event = fetchedEvents[Number(this.eventTime)];
             this.events.push(event);
             this.eventsAmount = event.eventsAmount;
-            console.log('hi baby!!!', this.eventTime, this.events)
         }
     }
 }

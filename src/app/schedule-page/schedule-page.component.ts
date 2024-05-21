@@ -105,8 +105,6 @@ export class SchedulePageComponent implements OnInit {
             }, error => {
                 console.error('Error saving config:', error);
             });
-
-        console.log(this.scheduleConfig);
     }
 
     // Date
@@ -131,13 +129,11 @@ export class SchedulePageComponent implements OnInit {
     }
 
     openDatePicker() {
-        console.log('init');
         const input = document.getElementById('invisible-date') as HTMLInputElement;
         if (input.showPicker) {
             input.showPicker();
-            console.log('opened');
         } else {
-            alert('not supported');
+            alert('Your browser is either not supported or heavily outdated');
         }
     }
 
@@ -156,7 +152,6 @@ export class SchedulePageComponent implements OnInit {
     applySchedule(schedule: any) {
         this.employees.forEach(employee => {
             this.scheduleConfig = JSON.parse(schedule.config);
-            console.log(this.scheduleConfig);
             const employeeSchedule = this.scheduleConfig[employee.name];
             if (employeeSchedule) {
                 this.times.forEach(time => {

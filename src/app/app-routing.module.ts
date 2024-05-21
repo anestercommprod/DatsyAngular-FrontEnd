@@ -4,7 +4,7 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { SchedulePageComponent } from './schedule-page/schedule-page.component';
 
 const routes: Routes = [
-  { path: '', component: HomePageComponent }, // Default route (homepage)
+  { path: '', component: HomePageComponent },
   { path: 'schedule', component: SchedulePageComponent }
 ];
 

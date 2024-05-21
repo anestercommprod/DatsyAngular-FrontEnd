@@ -27,9 +27,10 @@ export class HomePageComponent {
     }
     getStyle(): { [key: string]: string } {
         const currentTime = this.getCurrentTimeInMoscow();
+        const numericOffset = Number(0);
         const hours = currentTime.getHours();
         const minutes = currentTime.getMinutes();
-        const closestTime = this.getClosestTime(hours, minutes);
+        const closestTime = String(Number(this.getClosestTime(hours, minutes).replace(':', '').replace('-', '')) + numericOffset);
 
         this.markedSlot = document.getElementById(closestTime.toString()) as HTMLElement;
         this.markedSlotTime = closestTime;
@@ -37,11 +38,12 @@ export class HomePageComponent {
 
         if (this.markedSlot) {
             this.markedSlot.style.backgroundColor = '';
+            console.log('style reset for ', this.markedSlot)
         }
 
         this.markedSlotTime = closestTime;
         if (this.markedSlot) {
-            this.markedSlot.style.backgroundColor = 'rgb(200, 54, 54)';
+            this.markedSlot.style.boxShadow = '0px 0px 4px rgb(33, 150, 243, 0.5)';
             console.log(this.markedSlot);
         }
 
@@ -64,9 +66,36 @@ export class HomePageComponent {
         return `${String(closestHours).padStart(2, '0')}:${String(closestMinutes).padStart(2, '0')}`;
     }
 
+
+
+    // Open previous event after creating an event
+    openEvent(timeout: number = 0): void {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        const newUrlParams = new URLSearchParams(queryString);
+        newUrlParams.delete('openEvent')
+        const newUrl = window.location.origin + window.location.pathname + '?' + newUrlParams.toString();
+        history.replaceState(null, '', newUrl);
+
+        setTimeout(() => {
+            if (urlParams.has('openEvent')) {
+                const openEventValue = urlParams.get('openEvent');
+                document.getElementById(openEventValue).click();
+                urlParams.delete('openEvent');
+            } else {
+                console.log('openEvent parameter is not present in the URL');
+            }
+        }, timeout);
+    }
+
+
+
     ngAfterViewInit(): void {
         // mark current slot
-        this.getStyle();
+        setTimeout(() => {
+            this.getStyle();
+        }, 512);
         setInterval(() => {
             // Update the style every minute
             this.getStyle();
@@ -74,6 +103,7 @@ export class HomePageComponent {
     }
 
     ngOnInit() {
+        this.openEvent(1024);
         this.titleService.setTitle(this.title);
     }
 }

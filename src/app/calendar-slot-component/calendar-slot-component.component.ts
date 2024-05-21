@@ -11,6 +11,8 @@ import { Subscription } from 'rxjs';
 export class CalendarSlotComponentComponent {
     @ViewChild('newEventText', { static: false }) newEventText!: ElementRef;
 
+    apiEndpoint: string = 'http://localhost:8000';
+
     events: any[] = [];
     dataFetched: boolean = false;
 
@@ -36,13 +38,10 @@ export class CalendarSlotComponentComponent {
 
     toggleMaxHeight(element: HTMLElement) {
         const multiplierScale = element.children.length * 36;
-        // Check if the element has inline style
         if (element.style.maxHeight != '') {
-            // If it has inline style, remove it
             element.style.removeProperty('max-height');
         }
         else {
-            // If it doesn't have inline style, add it
             element.style.maxHeight = multiplierScale + 'px';
         }
     }
@@ -96,36 +95,36 @@ export class CalendarSlotComponentComponent {
                         this.getNameById(this.eventHolderId, 'holder');
                         this.eventCreatorId = event.eventOwner;
                         this.getNameById(this.eventCreatorId, 'creator');
-    
+
                         return true;  // Return true if a matching event is found
                     }
                 }
             }
         }
-    
+
         return false;  // Return false if no matching event is found
     }
-    
+
 
 
     getNameById(userId: string, type: 'holder' | 'creator'): void {
         let cache = localStorage.getItem('nameCache');
         let nameCache: { [id: string]: string } = cache ? JSON.parse(cache) : {};
-    
+
         if (!nameCache.hasOwnProperty(userId)) {
             nameCache[userId] = 'undefined';
             localStorage.setItem('nameCache', JSON.stringify(nameCache));
-    
+
             this.fetchNameById(userId).then((name: string) => {
                 nameCache[userId] = name.replace(/(\w)\w*\s(\w+)/, "$1. $2");
                 localStorage.setItem('nameCache', JSON.stringify(nameCache));
-    
+
                 if (type === 'holder') {
                     this.eventHolderName = nameCache[userId].split(" ")[0];
                 } else if (type === 'creator') {
                     this.eventCreatorName = nameCache[userId].split(" ")[0];
                 }
-    
+
                 return nameCache[userId];
             }).catch(error => {
                 console.error('Error fetching name by id:', error);
@@ -138,53 +137,76 @@ export class CalendarSlotComponentComponent {
             }
         }
     }
-    
+
     private fetchNameById(id: string): Promise<string> {
         return this.http.get(`http://localhost:8000/proxy/person/${id}`, { responseType: 'text' }).toPromise().then((name) => {
-            if(name == 'NotAssigned') return '';
+            if (name == 'NotAssigned') return '';
             return name || 'Undefined (no name)';
         })
-        .catch(error => {
-            console.error('Error fetching name by id:', JSON.stringify(error));
-            return 'Error fetching name: ' + error;
-        });
+            .catch(error => {
+                console.error('Error fetching name by id:', JSON.stringify(error));
+                return 'Error fetching name: ' + error;
+            });
     }
-    
-    
+
+
 
 
 
     // Create event
     createEvent(): void {
-        const url = 'http://localhost:8000/api/set-event-doc';
+        const url = '/api/set-event-doc';
         const eventData = {
             eventText: this.newEventText.nativeElement.value,
-            eventOwner: Number(localStorage.getItem('crm2id')), // You can provide a value here if needed
-            eventTime: this.setElementId(this.slotIndex), // You can provide a value here if needed
-            eventDate: localStorage.getItem('currentDate') // You can provide a value here if needed
+            eventOwner: Number(localStorage.getItem('crm2id')),
+            eventTime: this.setElementId(this.slotIndex),
+            eventDate: localStorage.getItem('currentDate')
         };
 
         const headers = new HttpHeaders({
             'Content-Type': 'application/json'
         });
 
-        this.http.post(url, eventData, { headers })
+        this.http.post(this.apiEndpoint + url, eventData, { headers })
             .subscribe(
                 response => {
-                    console.log('Event created successfully:', response);
-                    // Optionally, you can handle success response here
+                    console.log('Event created successfully:', response, '\n', eventData.eventDate, eventData.eventTime, eventData.eventText);
+
+                    const url = window.location.href.split('/').slice(0, 3).join('/') + "/?date=";
+                    const date = document.querySelector('app-calendar-slots-date-time').querySelector('p').innerText;
+                    window.open(url + date + '&openEvent=' + eventData.eventTime, '_self');
                 },
                 error => {
                     console.error('Error creating event:', error);
                     if (error.status == '418') {
                         alert('Event already exists!');
                     }
-                    // Optionally, you can handle error response here
                 }
             );
     }
 
     // Delete event
+    deleteEvent(eventId: number): void {
+        const url = `${this.apiEndpoint}/api/delete-event-doc?id=${eventId}`;
+
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (!response.ok) {
+                return response.json().then(error => { throw new Error(error.error); });
+            }
+            return response.json();
+        }).then(data => {
+            console.log('Event deleted successfully:', data);
+        }).catch(error => {
+            console.error('Error deleting event:', error.message);
+        });
+    }
+
+
 
 
 
@@ -206,8 +228,7 @@ export class CalendarSlotComponentComponent {
     }
 
     storeEvents(fetchedEvents: any[]) {
-        if (this.eventTime !== '' && fetchedEvents[Number(this.eventTime)].eventsAmount != 0) 
-        {
+        if (this.eventTime !== '' && fetchedEvents[Number(this.eventTime)].eventsAmount != 0) {
             const event = fetchedEvents[Number(this.eventTime)];
             this.events.push(event);
             this.eventsAmount = event.eventsAmount;

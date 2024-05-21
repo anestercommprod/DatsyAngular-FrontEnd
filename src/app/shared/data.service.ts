@@ -11,7 +11,7 @@ export class DataService {
   data$: Observable<any> = this.dataSource.asObservable();
   fetchedEvents: any;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   setData(data: any) {
     this.dataSource.next(data);
@@ -28,6 +28,19 @@ export class DataService {
       }),
       catchError((error) => {
         console.error('Error fetching events:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+  fetchScheduleConfig(date: string): Observable<any> {
+    const apiUrl = `http://localhost:8000/api/return-schedule-config?day=${date}`;
+    return this.http.get<any>(apiUrl).pipe(
+      tap((data) => {
+        this.setData(data);
+      }),
+      catchError((error) => {
+        console.error('Error fetching schedule:', error);
         return throwError(error);
       })
     );

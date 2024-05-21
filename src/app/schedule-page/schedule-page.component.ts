@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { DataService } from '../shared/data.service';
 import { Title } from '@angular/platform-browser';
 
 @Component({
@@ -7,16 +9,11 @@ import { Title } from '@angular/platform-browser';
     styleUrls: ['./schedule-page.component.css']
 })
 
-export class SchedulePageComponent {
+export class SchedulePageComponent implements OnInit {
     title = 'Datsy - Schedule';
-
-    statuses: string[] = [
-        'Work',
-        'Box',
-        'Lunch',
-        'Quest',
-        'Meeting'
-    ];
+    statuses: string[] = ['Work', 'Box', 'Lunch', 'Quest', 'Meeting'];
+    scheduleApiUrl = 'http://localhost:8000/api';
+    scheduleConfig: string = '';
     currentStatus: string = 'Work';
     employeeList = [
         'Alexander Nester',
@@ -26,26 +23,31 @@ export class SchedulePageComponent {
         'Andrey Paschenko',
         'Maxim Sultanov'
     ];
-    selectedDate: string = "Loading..."
-    selectedDate_day: string = ""
-
-
+    selectedDate: string = "Loading...";
+    selectedDate_day: string = "";
     times: string[] = [];
     employees: { name: string, schedule: { [key: string]: string } }[] = [];
+    isLoading: boolean = true;
 
-    constructor(private titleService: Title) {
+    constructor(
+        private titleService: Title,
+        private http: HttpClient,
+        private dataService: DataService
+    ) {
         this.generateTimes();
         this.employees = this.generateEmployees();
     }
 
-
+    ngOnInit() {
+        this.titleService.setTitle(this.title);
+        this.setSelectedDateToToday();
+        this.fetchSchedule();
+    }
 
     // Status
     setStatus(status: string) {
         this.currentStatus = status;
     }
-
-
 
     // Schedule
     generateTimes() {
@@ -61,8 +63,7 @@ export class SchedulePageComponent {
     }
 
     generateEmployees() {
-        const names = this.employeeList;
-        return names.map(name => ({
+        return this.employeeList.map(name => ({
             name: name,
             schedule: this.times.reduce((acc, time) => {
                 acc[time] = ''; // Initialize with an empty string
@@ -93,10 +94,20 @@ export class SchedulePageComponent {
             return acc;
         }, {});
 
-        console.log(JSON.stringify(schedule, null, 2));
+        this.scheduleConfig = JSON.stringify(schedule, null, 2);
+
+        const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+        const body = `day=${encodeURIComponent(this.selectedDate)}&config=${encodeURIComponent(this.scheduleConfig)}`;
+
+        this.http.post(`${this.scheduleApiUrl}/set-schedule-config`, body, { headers })
+            .subscribe(response => {
+                console.log('Config saved successfully:', response);
+            }, error => {
+                console.error('Error saving config:', error);
+            });
+
+        console.log(this.scheduleConfig);
     }
-
-
 
     // Date
     formatDate(date: Date): string {
@@ -105,31 +116,54 @@ export class SchedulePageComponent {
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     }
+
     setSelectedDateToToday() {
         const today = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
         this.selectedDate = this.formatDate(today);
         this.selectedDate_day = " - " + today.toLocaleString('en-US', { weekday: 'long' });
     }
+
     onDateChange(event: Event) {
         const input = event.target as HTMLInputElement;
         const date = new Date(input.value);
         this.selectedDate = this.formatDate(date);
+        this.fetchSchedule();
     }
 
-
     openDatePicker() {
-        console.log('init')
+        console.log('init');
         const input = document.getElementById('invisible-date') as HTMLInputElement;
         if (input.showPicker) {
             input.showPicker();
-            console.log('opened')
+            console.log('opened');
         } else {
-            alert('not supported')
+            alert('not supported');
         }
     }
 
-    ngOnInit() {
-        this.titleService.setTitle(this.title);
-        this.setSelectedDateToToday();
+    // Schedule workflow
+    fetchSchedule() {
+        this.isLoading = true;
+        this.dataService.fetchScheduleConfig(this.selectedDate).subscribe(data => {
+            this.applySchedule(data);
+            this.isLoading = false;
+        }, error => {
+            console.error('Error fetching schedule:', error);
+            this.isLoading = false;
+        });
+    }
+
+    applySchedule(schedule: any) {
+        this.employees.forEach(employee => {
+            this.scheduleConfig = JSON.parse(schedule.config);
+            console.log(this.scheduleConfig);
+            const employeeSchedule = this.scheduleConfig[employee.name];
+            if (employeeSchedule) {
+                this.times.forEach(time => {
+                    const formattedTime = time.replace(':', '');
+                    employee.schedule[time] = employeeSchedule[formattedTime] || '';
+                });
+            }
+        });
     }
 }
